@@ -1,0 +1,227 @@
+---
+title: "Hausarbeit: Einflussfaktoren auf Komplikationen bei chirurgischen Eingriffen"
+author: "Philipp Feierabend"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# Einleitung
+
+Diese Hausarbeit analysiert simulierte Daten zu **Operationsdauer**, **Blutverlust** und **Komplikationsrisiko** bei chirurgischen Eingriffen mit dem Statistikprogramm **R**. Ziel ist es, statistische Größen wie Lage- und Streumaße zu berechnen, Zusammenhänge zu erkennen und medizinisch zu interpretieren.
+
+Ein gutes Verständnis solcher Einflussfaktoren ist entscheidend, um chirurgische Risiken besser einschätzen und präventive Maßnahmen planen zu können.
+
+------------------------------------------------------------------------
+
+# Verzeichnisstruktur
+
+r_projekt_feierabend_philipp/
+├── r_projekt_feierabend_philipp.Rproj        # RStudio-Projektdatei
+├── hausarbeit.Rmd                            # Hauptdokument mit Text, Code und Auswertung
+├── scripts/                                  # R-Skripte je Aufgabe
+│   ├── 01_datenerzeugung.R
+│   ├── 02_visualisierung.R
+│   ├── 03_lagemasse.R
+│   ├── 04_streumasse.R
+│   ├── 05_korrelation.R
+│   └── 06_regression.R
+├── export/                                   # Ergebnisse und Grafiken nach Aufgabe sortiert
+│   ├── 02_visualisierung/
+│   ├── 03_lagemasse/
+│   ├── 04_streumasse/
+│   ├── 05_korrelation/
+│   └── 06_regression/
+├── data/                                     # Simulierte Datensätze
+│   ├── chirurgische_komplikationen.csv
+│   └── chirurgische_komplikationen.RData
+├── README.md                                 # Projektbeschreibung, Setup-Hinweise
+
+
+------------------------------------------------------------------------
+
+# Aufgabe a) Bedeutung der Daten im Studienkontext
+
+## Fachlicher Hintergrund
+
+Die Analyse basiert auf simulierten OP-Daten und ist relevant für Studiengänge wie **Angewandte Gesundheitswissenschaften**, **Gesundheitsökonomie** oder **Medizinische Informatik**. Komplikationen nach chirurgischen Eingriffen sind ein ernstzunehmender klinischer Parameter. Je nach Eingriff kann die **Operationsdauer** (z. B. längere OPs bei komplexeren Fällen), der **intraoperative Blutverlust** oder das **individuelle Komplikationsrisiko** stark variieren.
+
+Ziel ist es, durch statistische Analysen ein besseres Verständnis dieser Variablen zu entwickeln, was wiederum z. B. OP-Teams bei Entscheidungen zur Risikoeinschätzung unterstützen kann.
+
+## Statistische Begriffe im Projektkontext
+
+-   **Merkmalsträger:** Ein einzelner chirurgischer Eingriff
+-   **Merkmale:**
+    -   *Operationsdauer* (in Minuten)
+    -   *Blutverlust* (in Millilitern)
+    -   *Komplikationsrisiko* (Skalenwert zwischen 30–300)
+-   **Merkmalsausprägung:** Ein konkreter Wert pro Merkmal, z. B. 120 Minuten, 180 ml, Risikoindex 210
+-   **Skalenniveau:** Alle drei Merkmale sind **metrisch skaliert**. Daher sind statistische Berechnungen wie Mittelwert, Varianz oder Regressionsanalyse sinnvoll.
+-   **Hinweis zur Skala Komplikationsrisiko:**\
+    Der Wert "Komplikationsrisiko" ist ein **Indexwert** zur besseren Vergleichbarkeit. Er soll *nicht* als realer Prozentwert interpretiert werden, sondern stellt ein relatives Maß zur Einschätzung des Risikos dar. So kann z. B. "180" als doppelt so risikobehaftet wie "90" betrachtet werden.
+
+------------------------------------------------------------------------
+
+# Vorbereitung: R-Pakete installieren und laden
+
+## 1. Pakete festlegen
+
+```{r define_packages}
+pakete <- c(
+  "compiler", "fastmap", "cli", "graphics", "htmltools", "tools", "utils",
+  "grDevices", "yaml", "stats", "datasets", "rmarkdown", "knitr", "methods",
+  "xfun", "digest", "rlang", "renv", "base", "evaluate", "ggplot2", "broom"
+)
+```
+
+## 2. Fehlende Pakete installieren
+
+```{r install_packages}
+fehlen <- pakete[!(pakete %in% installed.packages()[, "Package"])]
+if (length(fehlen) > 0) {
+  install.packages(fehlen)
+}
+```
+
+## 3. Pakete laden
+
+```{r load_packages}
+lapply(pakete, function(pkg) {
+  library(pkg, character.only = TRUE)
+})
+```
+
+## 4. Session-Info anzeigen
+
+```{r session_info}
+sessionInfo()
+```
+
+------------------------------------------------------------------------
+
+# Datenerzeugung mit R
+
+Zur Grundlage dieser Arbeit wurde ein Datensatz mit 500 simulierten Beobachtungen erstellt. Jede Beobachtung stellt einen OP-Fall dar. Die Variablen wurden im gleichen Bereich (30–300) erzeugt, um vergleichbare Skalierung zu gewährleisten.
+
+```{r datensatz_erzeugen}
+source(here::here("scripts", "01_datenerzeugung.R"))
+```
+
+Die erzeugten Daten wurden in `data/chirurgische_komplikationen.RData` gespeichert und können in den folgenden Analysen verwendet werden.
+
+------------------------------------------------------------------------
+
+# Aufgabe b) Grafische Darstellung
+
+```{r visualisierung}
+source(here::here("scripts", "02_visualisierung.R"))
+```
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("export/02_visualisierung/hist_operationsdauer.png")
+knitr::include_graphics("export/02_visualisierung/hist_blutverlust.png")
+knitr::include_graphics("export/02_visualisierung/hist_komplikationsrisiko.png")
+knitr::include_graphics("export/02_visualisierung/boxplot_operationsdauer.png")
+knitr::include_graphics("export/02_visualisierung/boxplot_blutverlust.png")
+knitr::include_graphics("export/02_visualisierung/boxplot_komplikationsrisiko.png")
+```
+
+**Interpretation:**\
+Die Histogramme zeigen die Verteilung jeder Variable. Die Boxplots geben einen Eindruck über Streuung und Ausreißer. Beispielsweise kann ein weiter Boxplot auf stark streuende OP-Dauern hindeuten. Besonders auffällige Werte am Rand könnten auf Extremfälle oder fehlerhafte Daten hinweisen.Die y-Achse der Histogramme zeigt die Anzahl der Operationen, die innerhalb eines bestimmten Wertebereichs lagen.
+
+------------------------------------------------------------------------
+
+# Aufgabe c) Lagemaße
+
+```{r lagemasse}
+source(here::here("scripts", "03_lagemasse.R"))
+```
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("export/03_lagemasse/lagemasse_operationsdauer.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_blutverlust.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_komplikationsrisiko.png")
+```
+
+**Interpretation:**\
+🟦 = Mittelwert  
+🟥 = Median
+Lagemaße geben an, wo sich "typische" Werte im Datensatz befinden. Ein hoher Mittelwert der OP-Dauer kann auf tendenziell komplexere Eingriffe hinweisen. Der Vergleich von Median und Mittelwert hilft zu erkennen, ob Ausreißer die Lage verzerren.
+
+------------------------------------------------------------------------
+
+# Aufgabe d) Streumaße
+
+```{r streumasse}
+source(here::here("scripts", "04_streumasse.R"))
+```
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("export/04_streumasse/streumasse_operationsdauer.png")
+knitr::include_graphics("export/04_streumasse/streumasse_blutverlust.png")
+knitr::include_graphics("export/04_streumasse/streumasse_komplikationsrisiko.png")
+```
+
+**Interpretation:**\
+Die Streuung beschreibt, wie stark sich die Werte innerhalb eines Merkmals unterscheiden. Eine hohe Standardabweichung beim Blutverlust kann bedeuten, dass die intraoperative Blutkontrolle sehr unterschiedlich ausfällt – etwa abhängig von OP-Art oder Technik.
+
+------------------------------------------------------------------------
+
+# Aufgabe e) Korrelationen
+
+```{r korrelation}
+source(here::here("scripts", "05_korrelation.R"))
+```
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("export/05_korrelation/plot_ops_blut.png")
+knitr::include_graphics("export/05_korrelation/plot_ops_komp.png")
+knitr::include_graphics("export/05_korrelation/plot_blut_komp.png")
+```
+
+```{r korrelationstabelle}
+knitr::kable(read.csv("export/05_korrelation/korrelationen.csv"),
+             caption = "Korrelationskoeffizienten der Merkmalskombinationen")
+```             
+
+**Interpretation:**\
+Hier wird analysiert, ob zwei Variablen gemeinsam variieren. Eine positive Korrelation zwischen OP-Dauer und Blutverlust würde bedeuten: je länger der Eingriff, desto mehr Blutverlust. Dies kann medizinisch und organisatorisch relevant sein.
+
+------------------------------------------------------------------------
+
+# Aufgabe f) Regressionsanalyse
+
+```{r regression}
+source(here::here("scripts", "06_regression.R"))
+```
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("export/06_regression/regression_blut_komp.png")
+```
+
+```{r regressionstabelle}
+knitr::kable(read.csv("export/06_regression/regression_koeffizienten.csv"),
+             caption = "Regressionskoeffizienten für Komplikationsrisiko ~ Blutverlust")
+```
+
+```{r bestimmtheitsmass}
+cat(readLines("export/06_regression/r_squared.txt"))
+```
+
+**Interpretation:**\
+Die lineare Regression untersucht, ob sich das Komplikationsrisiko durch andere Variablen vorhersagen lässt – hier z. B. durch den Blutverlust. Die Steigung zeigt den geschätzten Anstieg des Risikos pro zusätzlichem ml Blutverlust. Der **R²-Wert** (Bestimmtheitsmaß) gibt an, wie gut das Modell die Daten erklärt. Ein höherer R²-Wert bedeutet: Ein größerer Teil der Streuung im Komplikationsrisiko kann durch Blutverlust erklärt werden.
+
+------------------------------------------------------------------------
+
+# Fazit
+
+Diese Auswertung liefert einen praxisnahen Überblick darüber, wie medizinische Daten mit R analysiert und interpretiert werden können. Schon einfache Maße wie Mittelwert, Standardabweichung und Korrelation ermöglichen wertvolle Einblicke in Risikofaktoren chirurgischer Eingriffe.
+
+Die gewählten Variablen (Operationsdauer, Blutverlust, Komplikationsrisiko) stehen in plausiblen Beziehungen zueinander und können – mit realen Daten – als Grundlage für medizinische Qualitätssicherung oder Entscheidungsunterstützungssysteme genutzt werden.
+
+------------------------------------------------------------------------
+
+# Anhang
+
+-   Datensatz: `data/chirurgische_komplikationen.csv`
+-   R-Skripte: siehe `scripts/`
+-   Quellen: Eigene Erzeugung & statistische Konzepte aus der Vorlesung
