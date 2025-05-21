@@ -103,7 +103,7 @@ sessionInfo()
 Zur Grundlage dieser Arbeit wurde ein Datensatz mit 500 simulierten Beobachtungen erstellt. Jede Beobachtung stellt einen OP-Fall dar. Die Variablen wurden im gleichen Bereich (30–300) erzeugt, um vergleichbare Skalierung zu gewährleisten.
 
 ```{r datensatz_erzeugen}
-source(here::here("scripts", "01_datenerzeugung.R"))
+source(here::here("scripts", "01_datenerzeugung_v1.R"))
 ```
 
 Die erzeugten Daten wurden in `data/chirurgische_komplikationen.RData` gespeichert und können in den folgenden Analysen verwendet werden.
@@ -113,16 +113,18 @@ Die erzeugten Daten wurden in `data/chirurgische_komplikationen.RData` gespeiche
 # Aufgabe b) Grafische Darstellung
 
 ```{r visualisierung}
-source(here::here("scripts", "02_visualisierung.R"))
+source(here::here("scripts", "02_visualisierung_v3.R"))
 ```
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/02_visualisierung/hist_operationsdauer.png")
 knitr::include_graphics("export/02_visualisierung/hist_blutverlust.png")
 knitr::include_graphics("export/02_visualisierung/hist_komplikationsrisiko.png")
-knitr::include_graphics("export/02_visualisierung/boxplot_operationsdauer.png")
-knitr::include_graphics("export/02_visualisierung/boxplot_blutverlust.png")
-knitr::include_graphics("export/02_visualisierung/boxplot_komplikationsrisiko.png")
+knitr::include_graphics("export/02_visualisierung/beeswarm_operationsdauer.png")
+knitr::include_graphics("export/02_visualisierung/beeswarm_blutverlust.png")
+knitr::include_graphics("export/02_visualisierung/beeswarm_komplikationsrisiko.png")
+knitr::include_graphics("export/02_visualisierung/beeswarm_alle_merkmale.png")
+
 ```
 
 **Interpretation:**\
@@ -133,32 +135,38 @@ Die Histogramme zeigen die Verteilung jeder Variable. Die Boxplots geben einen E
 # Aufgabe c) Lagemaße
 
 ```{r lagemasse}
-source(here::here("scripts", "03_lagemasse.R"))
+source(here::here("scripts", "03_lagemasse_v3.R"))
 ```
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("export/03_lagemasse/lagemasse_operationsdauer.png")
-knitr::include_graphics("export/03_lagemasse/lagemasse_blutverlust.png")
-knitr::include_graphics("export/03_lagemasse/lagemasse_komplikationsrisiko.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_duration_en.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_bloodloss_en.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_risk_en.png")
+```
+
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
+knitr::include_graphics("export/03_lagemasse/lagemasse_duration_de.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_bloodloss_de.png")
+knitr::include_graphics("export/03_lagemasse/lagemasse_risk_de.png")
 ```
 
 **Interpretation:**\
-🟦 = Mittelwert  
-🟥 = Median
-Lagemaße geben an, wo sich "typische" Werte im Datensatz befinden. Ein hoher Mittelwert der OP-Dauer kann auf tendenziell komplexere Eingriffe hinweisen. Der Vergleich von Median und Mittelwert hilft zu erkennen, ob Ausreißer die Lage verzerren.
+🟦 = Mittelwert\
+🟥 = Median Lagemaße geben an, wo sich "typische" Werte im Datensatz befinden. Ein hoher Mittelwert der OP-Dauer kann auf tendenziell komplexere Eingriffe hinweisen. Der Vergleich von Median und Mittelwert hilft zu erkennen, ob Ausreißer die Lage verzerren.
 
 ------------------------------------------------------------------------
 
 # Aufgabe d) Streumaße
 
 ```{r streumasse}
-source(here::here("scripts", "04_streumasse.R"))
+source(here::here("scripts", "04_streumasse_v4.R"))
 ```
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("export/04_streumasse/streumasse_operationsdauer.png")
-knitr::include_graphics("export/04_streumasse/streumasse_blutverlust.png")
-knitr::include_graphics("export/04_streumasse/streumasse_komplikationsrisiko.png")
+knitr::include_graphics("export/04_streumasse/streumasse_boxplots_gesamt.png")
+knitr::include_graphics("export/04_streumasse/iqr_mad_operationsdauer.png")
+knitr::include_graphics("export/04_streumasse/iqr_mad_blutverlust.png")
+knitr::include_graphics("export/04_streumasse/iqr_mad_komplikationsrisiko.png")
 ```
 
 **Interpretation:**\
@@ -169,7 +177,7 @@ Die Streuung beschreibt, wie stark sich die Werte innerhalb eines Merkmals unter
 # Aufgabe e) Korrelationen
 
 ```{r korrelation}
-source(here::here("scripts", "05_korrelation.R"))
+source(here::here("scripts", "05_korrelation_v3.R"))
 ```
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
@@ -178,10 +186,7 @@ knitr::include_graphics("export/05_korrelation/plot_ops_komp.png")
 knitr::include_graphics("export/05_korrelation/plot_blut_komp.png")
 ```
 
-```{r korrelationstabelle}
-knitr::kable(read.csv("export/05_korrelation/korrelationen.csv"),
-             caption = "Korrelationskoeffizienten der Merkmalskombinationen")
-```             
+doc datei wird ausgebeben für hausarbeit ausarbeitung siehe export file
 
 **Interpretation:**\
 Hier wird analysiert, ob zwei Variablen gemeinsam variieren. Eine positive Korrelation zwischen OP-Dauer und Blutverlust würde bedeuten: je länger der Eingriff, desto mehr Blutverlust. Dies kann medizinisch und organisatorisch relevant sein.
@@ -191,21 +196,15 @@ Hier wird analysiert, ob zwei Variablen gemeinsam variieren. Eine positive Korre
 # Aufgabe f) Regressionsanalyse
 
 ```{r regression}
-source(here::here("scripts", "06_regression.R"))
+source(here::here("scripts", "06_regression_v2.R"))
 ```
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
-knitr::include_graphics("export/06_regression/regression_blut_komp.png")
+knitr::include_graphics("export/06_regression/reg_blut.png")
+knitr::include_graphics("export/06_regression/reg_ops.png")
 ```
 
-```{r regressionstabelle}
-knitr::kable(read.csv("export/06_regression/regression_koeffizienten.csv"),
-             caption = "Regressionskoeffizienten für Komplikationsrisiko ~ Blutverlust")
-```
-
-```{r bestimmtheitsmass}
-cat(readLines("export/06_regression/r_squared.txt"))
-```
+doc datei wird ausgebeben für hausarbeit ausarbeitung siehe export file
 
 **Interpretation:**\
 Die lineare Regression untersucht, ob sich das Komplikationsrisiko durch andere Variablen vorhersagen lässt – hier z. B. durch den Blutverlust. Die Steigung zeigt den geschätzten Anstieg des Risikos pro zusätzlichem ml Blutverlust. Der **R²-Wert** (Bestimmtheitsmaß) gibt an, wie gut das Modell die Daten erklärt. Ein höherer R²-Wert bedeutet: Ein größerer Teil der Streuung im Komplikationsrisiko kann durch Blutverlust erklärt werden.
