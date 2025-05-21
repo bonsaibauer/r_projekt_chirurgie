@@ -309,7 +309,7 @@ knitr::include_graphics("export/05_korrelation/plot_ops_komp.png")
 knitr::include_graphics("export/05_korrelation/plot_blut_komp.png")
 ```
 
-> **Hinweis:** Die Datei wird als `.doc`-Datei für die Hausarbeit-Ausarbeitung ausgegeben.
+> **Hinweis:** Die Datei wird als `.docx`-Datei für die Hausarbeit-Ausarbeitung ausgegeben.
 
 ------------------------------------------------------------------------
 
@@ -358,7 +358,7 @@ knitr::include_graphics("export/06_regression/reg_blut.png")
 knitr::include_graphics("export/06_regression/reg_ops.png")
 ```
 
-> **Hinweis:** Die Datei wird als `.doc`-Datei für die Hausarbeit-Ausarbeitung ausgegeben.
+> **Hinweis:** Die Datei wird als `.docx`-Datei für die Hausarbeit-Ausarbeitung ausgegeben.
 
 ------------------------------------------------------------------------
 
