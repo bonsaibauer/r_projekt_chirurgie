@@ -25,7 +25,7 @@ r_projekt_feierabend_philipp/
 │   ├── 04_streumasse.R
 │   ├── 05_korrelation.R
 │   └── 06_regression.R
-├── export/                                   # Ergebnisse und Grafiken nach Aufgabe sortiert
+├── export/                                   # Ergebnisse und Grafiken nach Aufgabe     sortiert 
 │   ├── 02_visualisierung/
 │   ├── 03_lagemasse/
 │   ├── 04_streumasse/
@@ -67,10 +67,25 @@ Ziel ist es, durch statistische Analysen ein besseres Verständnis dieser Variab
 
 ```{r define_packages}
 pakete <- c(
-  "compiler", "fastmap", "cli", "graphics", "htmltools", "tools", "utils",
-  "grDevices", "yaml", "stats", "datasets", "rmarkdown", "knitr", "methods",
-  "xfun", "digest", "rlang", "renv", "base", "evaluate", "ggplot2", "broom"
+  "here",
+  "ggplot2",
+  "ggbeeswarm",
+  "reshape2",
+  "officer",
+  "flextable",
+  "dplyr",
+  "psych",
+  "gridExtra",
+  "apaTables"
 )
+
+# Überprüfe, ob die Pakete installiert sind, und installiere sie, falls nicht
+for (pkg in pakete) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    install.packages(pkg)
+  }
+  library(pkg, character.only = TRUE)
+}
 ```
 
 ## 2. Fehlende Pakete installieren
