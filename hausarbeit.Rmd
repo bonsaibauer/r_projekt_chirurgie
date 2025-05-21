@@ -15,27 +15,7 @@ Ein gutes Verständnis solcher Einflussfaktoren ist entscheidend, um chirurgisch
 
 # Verzeichnisstruktur
 
-r_projekt_feierabend_philipp/
-├── r_projekt_feierabend_philipp.Rproj        # RStudio-Projektdatei
-├── hausarbeit.Rmd                            # Hauptdokument mit Text, Code und Auswertung
-├── scripts/                                  # R-Skripte je Aufgabe
-│   ├── 01_datenerzeugung.R
-│   ├── 02_visualisierung.R
-│   ├── 03_lagemasse.R
-│   ├── 04_streumasse.R
-│   ├── 05_korrelation.R
-│   └── 06_regression.R
-├── export/                                   # Ergebnisse und Grafiken nach Aufgabe     sortiert 
-│   ├── 02_visualisierung/
-│   ├── 03_lagemasse/
-│   ├── 04_streumasse/
-│   ├── 05_korrelation/
-│   └── 06_regression/
-├── data/                                     # Simulierte Datensätze
-│   ├── chirurgische_komplikationen.csv
-│   └── chirurgische_komplikationen.RData
-├── README.md                                 # Projektbeschreibung, Setup-Hinweise
-
+![Verzeichnisstruktur](verzeichnis.png)
 
 ------------------------------------------------------------------------
 
@@ -115,21 +95,66 @@ sessionInfo()
 
 # Datenerzeugung mit R
 
-Zur Grundlage dieser Arbeit wurde ein Datensatz mit 500 simulierten Beobachtungen erstellt. Jede Beobachtung stellt einen OP-Fall dar. Die Variablen wurden im gleichen Bereich (30–300) erzeugt, um vergleichbare Skalierung zu gewährleisten.
+Zu Beginn der Analyse wird ein Datensatz mit 500 simulierten Beobachtungen erzeugt. Jede dieser Beobachtungen repräsentiert einen chirurgischen Eingriff, und der Datensatz umfasst die Variablen *Operationsdauer*, *Blutverlust* und *Komplikationsrisiko*, die zufällig im Bereich von 30 bis 300 erzeugt wurden. Diese Auswahl stellt sicher, dass alle Variablen denselben Wertebereich abdecken, was eine vergleichbare Analyse ermöglicht.
+
+### Code-Erklärung:
 
 ```{r datensatz_erzeugen}
 source(here::here("scripts", "01_datenerzeugung_v1.R"))
 ```
 
-Die erzeugten Daten wurden in `data/chirurgische_komplikationen.RData` gespeichert und können in den folgenden Analysen verwendet werden.
+-   **`source()`**: Mit dieser Funktion wird das R-Skript `01_datenerzeugung_v1.R` aufgerufen, das die Datenerstellung übernimmt. Das Skript erzeugt drei Zufallsvariablen:
+    -   **`Operationsdauer`**: Zufallszahlen im Bereich von 30 bis 300, die die Dauer der Operation in Minuten repräsentieren.
+    -   **`Blutverlust`**: Zufallszahlen im selben Bereich, die den Blutverlust in Millilitern beschreiben.
+    -   **`Komplikationsrisiko`**: Ein weiteres zufällig generiertes Maß für das Risiko von Komplikationen, ebenfalls im Bereich von 30 bis 300.
+-   **Speicherung der Daten**: Die erzeugten Daten werden sowohl in der `.RData`- als auch in der `.csv`-Datei gespeichert, um die Weiterverwendung zu erleichtern.
+
+``` r
+save(daten, file = dateiname_rdata)
+write.csv(daten, file = dateiname_csv, row.names = FALSE)
+```
 
 ------------------------------------------------------------------------
 
 # Aufgabe b) Grafische Darstellung
 
+Um die Verteilung der Variablen visuell darzustellen, werden verschiedene Diagrammtypen verwendet. Insbesondere werden Histogramme und Beeswarm-Plots eingesetzt, um die Häufigkeit der Daten sowie die Verteilung innerhalb der Variablen darzustellen.
+
+### Code-Erklärung:
+
 ```{r visualisierung}
 source(here::here("scripts", "02_visualisierung_v3.R"))
 ```
+
+-   **`source()`**: Hier wird das Skript `02_visualisierung_v3.R` aufgerufen, das für die grafische Darstellung verantwortlich ist. Im Skript werden die folgenden Schritte durchgeführt:
+
+1.  **Histogramme**:
+
+    ``` r
+    ggplot(daten, aes(x = Operationsdauer)) +
+      geom_histogram(binwidth = 20, fill = "lightblue", color = "black") +
+      labs(title = "Histogramm: Operationsdauer", x = "Minuten", y = "Frequenz") +
+      xlim(30, 300) +
+      theme_white_report()
+    ```
+
+    -   **`ggplot()`**: Diese Funktion wird verwendet, um das Histogramm für die *Operationsdauer* zu erstellen. Es wird ein Histogramm mit einer Binbreite von 20 erzeugt. Das Aussehen des Diagramms wird mit der Funktion **`theme_white_report()`** angepasst.
+    -   **`geom_histogram()`**: Diese Funktion fügt die Histogrammdaten zum Diagramm hinzu.
+    -   **`labs()`**: Dient der Beschriftung der Achsen und des Titels des Diagramms.
+
+2.  **Beeswarm-Plots**:
+
+    ``` r
+    ggplot(daten_long, aes(x = Merkmal, y = Wert)) +
+      geom_beeswarm(priority = "density", color = "darkblue", size = 1.5, alpha = 0.6) +
+      labs(title = "Beeswarmplot: Vergleich der Merkmale", x = "Merkmal", y = "Wert (30–300)") +
+      ylim(30, 300) +
+      theme_white_report()
+    ```
+
+    -   **`geom_beeswarm()`**: Diese Funktion erzeugt die Beeswarm-Plots. Die Punkte werden dicht nebeneinander angeordnet, wobei die Dichte der Punkte visualisiert wird. Dies ermöglicht eine übersichtliche Darstellung der Verteilung der Werte in den verschiedenen Variablen.
+
+### Ausgabae der Histogramme und Beeswarm-Plots:
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/02_visualisierung/hist_operationsdauer.png")
@@ -142,16 +167,45 @@ knitr::include_graphics("export/02_visualisierung/beeswarm_alle_merkmale.png")
 
 ```
 
-**Interpretation:**\
-Die Histogramme zeigen die Verteilung jeder Variable. Die Boxplots geben einen Eindruck über Streuung und Ausreißer. Beispielsweise kann ein weiter Boxplot auf stark streuende OP-Dauern hindeuten. Besonders auffällige Werte am Rand könnten auf Extremfälle oder fehlerhafte Daten hinweisen.Die y-Achse der Histogramme zeigt die Anzahl der Operationen, die innerhalb eines bestimmten Wertebereichs lagen.
-
 ------------------------------------------------------------------------
 
 # Aufgabe c) Lagemaße
 
+In dieser Aufgabe werden die Lagemaße (Mittelwert, Median und Modus) für jede Variable berechnet. Lagemaße beschreiben die zentrale Tendenz einer Verteilung und helfen, den "typischen" Wert einer Variablen zu bestimmen.
+
+### Code-Erklärung:
+
 ```{r lagemasse}
 source(here::here("scripts", "03_lagemasse_v3.R"))
 ```
+
+-   **`source()`**: Das Skript `03_lagemasse_v3.R` wird hier aufgerufen, um die Berechnungen der Lagemaße durchzuführen. Das Skript verwendet die folgenden Schritte:
+
+1.  **Berechnung des Mittelwerts, Medians und Modus**:
+
+    ``` r
+    mean_ops <- mean(daten$Operationsdauer)
+    median_ops <- median(daten$Operationsdauer)
+    modus_ops <- modus(daten$Operationsdauer)
+    ```
+
+    -   **`mean()`**: Berechnet den Mittelwert der *Operationsdauer*.
+    -   **`median()`**: Berechnet den Median, also den mittleren Wert der sortierten Daten.
+    -   **`modus()`**: Eine benutzerdefinierte Funktion, die den Modus, also den häufigsten Wert, berechnet.
+
+2.  **Darstellung der Lagemaße in einem Diagramm**:
+
+    ``` r
+    ggplot(daten, aes(x = .data[[var_name]])) +
+      geom_histogram(aes(y = ..density..), binwidth = 20, fill = "gray80", color = "black") +
+      geom_vline(xintercept = m, color = "blue", linetype = "dashed", linewidth = 1) +
+      geom_vline(xintercept = med, color = "red", linetype = "solid", linewidth = 1) +
+      geom_vline(xintercept = mod, color = "green", linetype = "dotted", linewidth = 1)
+    ```
+
+    -   Hier wird ein Histogramm erstellt, in dem die berechneten Lagemaße (Mittelwert, Median und Modus) als vertikale Linien angezeigt werden.
+
+### Ausgabe der Lageparameter in englisch:
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/03_lagemasse/lagemasse_duration_en.png")
@@ -159,23 +213,52 @@ knitr::include_graphics("export/03_lagemasse/lagemasse_bloodloss_en.png")
 knitr::include_graphics("export/03_lagemasse/lagemasse_risk_en.png")
 ```
 
+### Ausgabe der Lageparameter in deutsch:
+
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/03_lagemasse/lagemasse_duration_de.png")
 knitr::include_graphics("export/03_lagemasse/lagemasse_bloodloss_de.png")
 knitr::include_graphics("export/03_lagemasse/lagemasse_risk_de.png")
 ```
 
-**Interpretation:**\
-🟦 = Mittelwert\
-🟥 = Median Lagemaße geben an, wo sich "typische" Werte im Datensatz befinden. Ein hoher Mittelwert der OP-Dauer kann auf tendenziell komplexere Eingriffe hinweisen. Der Vergleich von Median und Mittelwert hilft zu erkennen, ob Ausreißer die Lage verzerren.
-
 ------------------------------------------------------------------------
 
 # Aufgabe d) Streumaße
 
+Streumaße wie die Standardabweichung, der Interquartilsabstand (IQR) und die mittlere absolute Abweichung (MAD) messen, wie weit die Daten von der zentralen Tendenz entfernt sind. Diese Maße geben Aufschluss darüber, wie variabel oder stabil die Werte innerhalb einer Variablen sind.
+
+### Code-Erklärung:
+
 ```{r streumasse}
 source(here::here("scripts", "04_streumasse_v4.R"))
 ```
+
+-   **`source()`**: Das Skript `04_streumasse_v4.R` wird verwendet, um die Streumaße zu berechnen und darzustellen. Folgende Schritte sind enthalten:
+
+1.  **Berechnung der Streumaße**:
+
+    ``` r
+    sd_ops <- sd(daten$Operationsdauer)
+    var_ops <- var(daten$Operationsdauer)
+    mad_ops <- mad(daten$Operationsdauer)
+    ```
+
+    -   **`sd()`**: Berechnet die Standardabweichung der *Operationsdauer*, was angibt, wie weit die einzelnen Werte im Durchschnitt vom Mittelwert abweichen.
+    -   **`var()`**: Berechnet die Varianz, also die mittlere quadratische Abweichung der Werte vom Mittelwert.
+    -   **`mad()`**: Berechnet die mittlere absolute Abweichung, die ein robustes Maß für die Streuung ist.
+
+2.  **Visualisierung der Streumaße**:
+
+    ``` r
+    ggplot(df, aes(x = Maß, y = Wert, fill = Maß)) +
+      geom_bar(stat = "identity", width = 0.5) +
+      labs(title = paste("IQR & MAD:", var_label), y = "Wert") +
+      theme_white_report()
+    ```
+
+    -   Hier werden die IQR- und MAD-Werte für jede Variable in einem Balkendiagramm dargestellt.
+
+### Ausgabe des Boxplotes und der Balkendiagramme
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/04_streumasse/streumasse_boxplots_gesamt.png")
@@ -184,16 +267,41 @@ knitr::include_graphics("export/04_streumasse/iqr_mad_blutverlust.png")
 knitr::include_graphics("export/04_streumasse/iqr_mad_komplikationsrisiko.png")
 ```
 
-**Interpretation:**\
-Die Streuung beschreibt, wie stark sich die Werte innerhalb eines Merkmals unterscheiden. Eine hohe Standardabweichung beim Blutverlust kann bedeuten, dass die intraoperative Blutkontrolle sehr unterschiedlich ausfällt – etwa abhängig von OP-Art oder Technik.
-
 ------------------------------------------------------------------------
 
 # Aufgabe e) Korrelationen
 
+Korrelationen beschreiben die Beziehung zwischen zwei Variablen. Ein positiver Korrelationskoeffizient zeigt an, dass ein Anstieg einer Variablen mit einem Anstieg der anderen Variablen verbunden ist.
+
+### Code-Erklärung:
+
 ```{r korrelation}
 source(here::here("scripts", "05_korrelation_v3.R"))
 ```
+
+-   **`source()`**: Das Skript `05_korrelation_v3.R` wird aufgerufen, um die Korrelationen zwischen den Variablen zu berechnen und darzustellen.
+
+1.  **Berechnung der Korrelationen**:
+
+    ``` r
+    cor_ops_blut <- cor(daten$Operationsdauer, daten$Blutverlust)
+    cor_ops_komp <- cor(daten$Operationsdauer, daten$Komplikationsrisiko)
+    cor_blut_komp <- cor(daten$Blutverlust, daten$Komplikationsrisiko)
+    ```
+
+    -   **`cor()`**: Berechnet den Korrelationskoeffizienten für jede Variablenpaarung.
+
+2.  **Visualisierung der Korrelationen**:
+
+    ``` r
+    ggplot(daten, aes(x = .data[[xvar]], y = .data[[yvar]])) +
+      geom_point(alpha = 0.5, color = "gray40") +
+      geom_smooth(method = "lm", color = "blue", linewidth = 1, se = FALSE)
+    ```
+
+    -   **`geom_smooth()`**: Fügt eine lineare Regressionslinie hinzu, um die Korrelation zwischen den Variablen zu verdeutlichen.
+
+### Ausgabe der Korrelationsdiagramme
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/05_korrelation/plot_ops_blut.png")
@@ -201,36 +309,62 @@ knitr::include_graphics("export/05_korrelation/plot_ops_komp.png")
 knitr::include_graphics("export/05_korrelation/plot_blut_komp.png")
 ```
 
-doc datei wird ausgebeben für hausarbeit ausarbeitung siehe export file
-
-**Interpretation:**\
-Hier wird analysiert, ob zwei Variablen gemeinsam variieren. Eine positive Korrelation zwischen OP-Dauer und Blutverlust würde bedeuten: je länger der Eingriff, desto mehr Blutverlust. Dies kann medizinisch und organisatorisch relevant sein.
+> **Hinweis:** Die Datei wird als `.doc`-Datei für die Hausarbeit-Ausarbeitung ausgegeben.
 
 ------------------------------------------------------------------------
 
-# Aufgabe f) Regressionsanalyse
+Aufgabe f) Regressionsanalyse
+
+Die Regressionsanalyse wird verwendet, um die Beziehung zwischen einer abhängigen und einer oder mehreren unabhängigen Variablen zu modellieren. In dieser Aufgabe wird untersucht, ob das Komplikationsrisiko durch den Blutverlust und die Operationsdauer vorhergesagt werden kann.
+
+### Code-Erklärung:
 
 ```{r regression}
 source(here::here("scripts", "06_regression_v2.R"))
 ```
+
+-   **`source()`**: Das Skript `06_regression_v2.R` wird aufgerufen, um die Regressionsanalyse durchzuführen.
+
+1.  **Erstellung eines Regressionsmodells**:
+
+    ``` r
+    model <- lm(Komplikationsrisiko ~ Blutverlust, data = daten)
+    ```
+
+    -   **`lm()`**: Führt eine lineare Regression durch, bei der das Komplikationsrisiko als abhängige Variable und der Blutverlust als unabhängige Variable verwendet werden.
+
+2.  **Visualisierung der Regressionsgeraden**:
+
+    ``` r
+    ggplot(daten, aes(x = Blutverlust, y = Komplikationsrisiko)) +
+      geom_point(alpha = 0.5, color = "gray40") +
+      geom_smooth(method = "lm", color = "blue", se = TRUE)
+    ```
+
+    -   **`geom_smooth()`**: Visualisiert die lineare Regressionsgerade zusammen mit einem Konfidenzintervall (durch `se = TRUE`).
+
+3.  **Ausgabe der Modellkoeffizienten**:
+
+    ``` r
+    summary(model)
+    ```
+
+    -   **`summary()`**: Gibt eine Zusammenfassung des Regressionsmodells aus, einschließlich der geschätzten Koeffizienten, p-Werte und R²-Wert.
+
+### Ausgabe der Regressionsabbildungen:
 
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 knitr::include_graphics("export/06_regression/reg_blut.png")
 knitr::include_graphics("export/06_regression/reg_ops.png")
 ```
 
-doc datei wird ausgebeben für hausarbeit ausarbeitung siehe export file
-
-**Interpretation:**\
-Die lineare Regression untersucht, ob sich das Komplikationsrisiko durch andere Variablen vorhersagen lässt – hier z. B. durch den Blutverlust. Die Steigung zeigt den geschätzten Anstieg des Risikos pro zusätzlichem ml Blutverlust. Der **R²-Wert** (Bestimmtheitsmaß) gibt an, wie gut das Modell die Daten erklärt. Ein höherer R²-Wert bedeutet: Ein größerer Teil der Streuung im Komplikationsrisiko kann durch Blutverlust erklärt werden.
+> **Hinweis:** Die Datei wird als `.doc`-Datei für die Hausarbeit-Ausarbeitung ausgegeben.
 
 ------------------------------------------------------------------------
 
 # Fazit
 
-Diese Auswertung liefert einen praxisnahen Überblick darüber, wie medizinische Daten mit R analysiert und interpretiert werden können. Schon einfache Maße wie Mittelwert, Standardabweichung und Korrelation ermöglichen wertvolle Einblicke in Risikofaktoren chirurgischer Eingriffe.
-
-Die gewählten Variablen (Operationsdauer, Blutverlust, Komplikationsrisiko) stehen in plausiblen Beziehungen zueinander und können – mit realen Daten – als Grundlage für medizinische Qualitätssicherung oder Entscheidungsunterstützungssysteme genutzt werden.
+Die Analyse hat gezeigt, wie verschiedene Variablen miteinander in Beziehung stehen und wie diese mit R untersucht werden können. Mit einfachen statistischen Verfahren wie Lagemaßen, Streumaßen und Regressionsanalysen können wertvolle Einblicke in die Daten gewonnen werden.
 
 ------------------------------------------------------------------------
 
