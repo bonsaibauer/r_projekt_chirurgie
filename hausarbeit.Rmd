@@ -61,7 +61,7 @@ installiere_pakete(pakete)
 cat("Alle Pakete wurden überprüft und installiert (falls notwendig).\n")
 ```
 
-## Projekt wiederherstellen, damit werden alle Umgebungen genau so hergestellt, wie ich es programmiert habe
+## Projekt wiederherstellen, damit werden alle Umgebungen genau so hergestellt, wie ich es programmiert habe (wichtig!)
 
 ```{r packages_install}
 renv::restore()
