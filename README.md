@@ -40,6 +40,13 @@ Clone the repository:
    ```bash
    git clone https://github.com/bonsaibauer/r_projekt_chirurgie.git
    ```
+   
+- Then open R-Studio and open r_projekt_chirurgie.Rproj.
+- Second step, open hausarbeit.Rmd and install packages and renv::restore()
+
+```bash
+   renv::restore()
+   ```
 
 ## 🔁 Reproducibility
 
