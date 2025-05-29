@@ -1,5 +1,3 @@
-# ---------------------------------------------
-# 07_Regression.R
 cat("----------------------------------------- \n")
 cat("06_Regression.R \n")
 cat("----------------------------------------- \n")
@@ -62,11 +60,17 @@ plot_regression <- function(xvar, yvar, daten, title, xlabel, ylabel, filename) 
     geom_smooth(method = "lm", color = "blue", se = TRUE) +
     labs(title = title, x = xlabel, y = ylabel) +
     theme_white_report()
-  print(p)  # Plot im Reiter "Plots" anzeigen
-  ggsave(file.path(output_dir, filename), plot = p, width = 8, height = 6)
+  
+  # Plot im Reiter "Plots" anzeigen
+  print(p)
+  
+  # Speichern des Plots
+  ggsave(filename = file.path(output_dir, filename), plot = p, width = 8, height = 6)
+  cat(paste("✅ Plot", filename, "wurde erfolgreich gespeichert.\n"))
 }
 
 # Plots für jede Regression erstellen
+cat("🔄 Speichern der Regressionsplots...\n")
 plot_regression("Blutverlust", "Komplikationsrisiko", daten,
                 "Regression: Komplikationsrisiko ~ Blutverlust",
                 "Blutverlust (ml)", "Komplikationsrisiko", "reg_blut.png")
@@ -75,21 +79,13 @@ plot_regression("Operationsdauer", "Komplikationsrisiko", daten,
                 "Regression: Komplikationsrisiko ~ Operationsdauer",
                 "Operationsdauer (Minuten)", "Komplikationsrisiko", "reg_ops.png")
 
-# 5) Neuer Plot: Regression zwischen Operationsdauer und Blutverlust
 plot_regression("Operationsdauer", "Blutverlust", daten,
                 "Regression: Blutverlust ~ Operationsdauer",
                 "Operationsdauer (Minuten)", "Blutverlust (ml)", "reg_ops_blut.png")
 
-# 6) Plots exportieren
-cat("🔄 Exportiere die Regressionsplots als PNG...\n")
+cat("✅ Alle Plots wurden erfolgreich gespeichert.\n")
 
-ggsave(file.path(output_dir, "reg_blut.png"))
-ggsave(file.path(output_dir, "reg_ops.png"))
-ggsave(file.path(output_dir, "reg_ops_blut.png"))
-
-cat("✅ Alle Plots wurden erfolgreich exportiert.\n")
-
-# 7) Regressions-Ergebnisse mit stargazer erzeugen und als .html speichern
+# 6) Regressions-Ergebnisse mit stargazer erzeugen und als .html speichern
 cat("🔄 Erstelle stargazer-Tabelle für die Regressionsmodelle als .html...\n")
 
 # Output der Regressionsmodelle unterdrücken und in eine HTML-Datei umleiten
@@ -110,7 +106,7 @@ cat("✅ Nach welcher Methode folgt die Korrelationsanalyse (Pearson/Spearman/Ke
 cat("\nDer Pearson-Korrelationskoeffizient wurde gewählt, weil die Variablen 'Blutverlust' und 'Operationsdauer' metrische Daten sind und eine lineare Beziehung zwischen ihnen erwartet wird. \nDer Pearson-Koeffizient ist der am häufigsten verwendete Korrelationskoeffizient für metrische Daten und zeigt die Stärke und Richtung der linearen Beziehung zwischen zwei Variablen.\n")
 cat("----------------------------------------- \n")
 
-# 8) HTML im RStudio Viewer anzeigen
+# 7) HTML im RStudio Viewer anzeigen
 cat("🔄 Zeige die Regressionstabelle im RStudio Viewer an...\n")
 if (interactive()) {
   viewer <- getOption("viewer")
