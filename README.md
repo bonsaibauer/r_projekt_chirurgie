@@ -12,16 +12,7 @@ This thesis investigates the relationship between **operation duration**, **intr
 
 ## 🗂️ Project Structure
 
-```
-r_projekt_chirurgie/
-├── hausarbeit.Rmd                      # Main document for the thesis
-├── data/                            # Simulated dataset
-│   └── surgical_complications.RData
-├── export/                          # Automatically generated plots & tables
-├── scripts/                         # Evaluation scripts (organized by tasks)
-├── README.md                        # This file
-└── renv/                            # Reproducible R environment
-```
+![Verzeichnis](verzeichnis.png)
 
 ## 💡 Contents of the R Scripts
 
